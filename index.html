@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aatiq AI Calculator</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin:0;
+    height:100vh;
+    font-family:"Poppins", sans-serif;
+    background:url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee") no-repeat center/cover;
+    color:white;
+}
+
+/* overlay */
+.overlay {
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+}
+
+/* center */
+.center {
+    position:relative;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:10px;
+}
+
+/* welcome */
+.welcome {
+    text-align:center;
+}
+
+.welcome button {
+    margin-top:20px;
+    padding:14px 30px;
+    border:none;
+    border-radius:30px;
+    background:linear-gradient(45deg,#00c6ff,#0072ff);
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+/* calculator */
+.calculator {
+    display:none;
+    backdrop-filter:blur(20px);
+    background:rgba(255,255,255,0.08);
+    border-radius:20px;
+    padding:15px;
+    width:100%;
+    max-width:340px;
+}
+
+/* back */
+.back-btn {
+    margin-bottom:10px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+/* display */
+.display {
+    height:65px;
+    font-size:24px;
+    padding:10px;
+    text-align:right;
+    border-radius:12px;
+    background:rgba(0,0,0,0.7);
+    margin-bottom:12px;
+}
+
+/* buttons */
+.buttons {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+button {
+    height:55px;
+    border:none;
+    border-radius:12px;
+    font-size:18px;
+    background:rgba(255,255,255,0.15);
+    color:white;
+    cursor:pointer;
+}
+
+.equal {
+    background:#00c6ff;
+    color:black;
+}
+
+/* voice orb */
+.voice-orb {
+    position:fixed;
+    bottom:70px;
+    right:15px;
+    width:60px;
+    height:60px;
+    background:radial-gradient(circle,#00c6ff,#0072ff);
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+}
+
+/* footer */
+.footer {
+    position:fixed;
+    bottom:8px;
+    right:12px;
+    font-size:11px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="overlay"></div>
+
+<div class="center">
+
+    <!-- WELCOME -->
+    <div class="welcome" id="welcome">
+        <h2>السلام عليكم ورحمة الله وبركاته</h2>
+        <p>Welcome to Aatiq's Calculator</p>
+
+        <!-- ENTER BUTTON BACK -->
+        <button onclick="enterApp()">Enter</button>
+
+        <p style="margin-top:10px;font-size:13px;">
+            aatiqhamid9@gmail.com
+        </p>
+    </div>
+
+    <!-- CALCULATOR -->
+    <div class="calculator" id="calc">
+        <div class="back-btn" onclick="goBack()">← Back</div>
+
+        <div class="display" id="display">0</div>
+
+        <div class="buttons">
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="backspace()">⌫</button>
+            <button onclick="append('%')">%</button>
+            <button onclick="append('/')">÷</button>
+
+            <button onclick="append('7')">7</button>
+            <button onclick="append('8')">8</button>
+            <button onclick="append('9')">9</button>
+            <button onclick="append('*')">×</button>
+
+            <button onclick="append('4')">4</button>
+            <button onclick="append('5')">5</button>
+            <button onclick="append('6')">6</button>
+            <button onclick="append('-')">−</button>
+
+            <button onclick="append('1')">1</button>
+            <button onclick="append('2')">2</button>
+            <button onclick="append('3')">3</button>
+            <button class="equal" onclick="calculate()">=</button>
+
+            <button onclick="append('0')">0</button>
+            <button onclick="append('.')">.</button>
+        </div>
+    </div>
+
+</div>
+
+<div class="voice-orb" onclick="startVoice()">🎤</div>
+<div class="footer">© 2026 Aatiq</div>
+
+<script>
+let display = document.getElementById("display");
+let welcome = document.getElementById("welcome");
+let calc = document.getElementById("calc");
+
+/* ENTER APP */
+function enterApp(){
+    greet();
+    setTimeout(()=>{
+        welcome.style.display="none";
+        calc.style.display="block";
+    },1200);
+}
+
+/* BACK */
+function goBack(){
+    calc.style.display="none";
+    welcome.style.display="block";
+}
+
+/* GREETING */
+function greet(){
+    speak("Assalamu Alaikum wa Rahmatullahi wa Barakatuh");
+}
+
+/* CALCULATOR */
+function append(v){
+    if(display.innerText==="0") display.innerText=v;
+    else display.innerText+=v;
+}
+
+function clearDisplay(){
+    display.innerText="0";
+}
+
+function backspace(){
+    display.innerText = display.innerText.slice(0,-1) || "0";
+}
+
+function calculate(){
+    try{
+        let result = eval(display.innerText);
+        display.innerText = result;
+        speak(result);
+    }catch{
+        display.innerText = "Error";
+    }
+}
+
+/* KEYBOARD */
+document.addEventListener("keydown",(e)=>{
+    if(!isNaN(e.key)||"+-*/.%".includes(e.key)) append(e.key);
+    if(e.key==="Enter") calculate();
+    if(e.key==="Backspace") backspace();
+});
+
+/* VOICE INPUT FIXED */
+function startVoice(){
+    let rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    rec.lang="en-GB";
+
+    rec.onresult = function(e){
+        let speech = e.results[0][0].transcript.toLowerCase();
+
+        speech = speech
+            .replace(/plus/g,"+")
+            .replace(/minus/g,"-")
+            .replace(/multiply|into/g,"*")
+            .replace(/divide/g,"/")
+            .replace(/[^0-9+\-*/%.]/g,""); // CLEAN INPUT
+
+        if(speech===""){
+            display.innerText="Error";
+            return;
+        }
+
+        display.innerText = speech;
+        calculate();
+    };
+
+    rec.start();
+}
+
+/* SPEAK */
+function speak(text){
+    let msg = new SpeechSynthesisUtterance(text);
+    msg.lang="en-GB";
+    msg.rate=0.9;
+    msg.pitch=1.3;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+</script>
+
+</body>
+</html>

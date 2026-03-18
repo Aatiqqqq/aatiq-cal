@@ -31,7 +31,6 @@ body{
     align-items:center;
 }
 
-/* welcome */
 .welcome{
     text-align:center;
 }
@@ -43,10 +42,8 @@ body{
     border-radius:30px;
     background:#00c6ff;
     color:black;
-    font-size:16px;
 }
 
-/* calculator */
 .calculator{
     display:none;
     background:rgba(255,255,255,0.08);
@@ -57,7 +54,6 @@ body{
     max-width:320px;
 }
 
-/* display */
 .display{
     background:black;
     padding:15px;
@@ -67,7 +63,6 @@ body{
     margin-bottom:10px;
 }
 
-/* grid */
 .buttons{
     display:grid;
     grid-template-columns:repeat(4,1fr);
@@ -88,13 +83,11 @@ button{
     color:black;
 }
 
-/* back */
 .back{
     margin-bottom:10px;
     cursor:pointer;
 }
 
-/* voice orb */
 .voice{
     position:fixed;
     bottom:70px;
@@ -170,37 +163,59 @@ button{
 <script>
 let display=document.getElementById("display");
 
-/* VOICE LOAD */
-let voices=[];
-speechSynthesis.onvoiceschanged=()=>{
-    voices=speechSynthesis.getVoices();
-};
-
-/* NORMAL VOICE */
-function getVoice(){
-    return voices.find(v=>v.lang==="en-GB") || voices[0];
-}
-
-/* SPEAK CLEAN */
-function speak(text){
+/* ------------------- */
+/* NORMAL VOICE (FALLBACK) */
+/* ------------------- */
+function fallbackSpeak(text){
     let msg=new SpeechSynthesisUtterance(text);
-
-    msg.voice=getVoice();
-    msg.rate=1;   // normal
-    msg.pitch=1;  // normal
-
+    msg.lang="en-GB";
+    msg.rate=1;
+    msg.pitch=1;
     speechSynthesis.cancel();
     speechSynthesis.speak(msg);
 }
 
-/* ENTER (FIXED SALAM) */
+/* ------------------- */
+/* AI VOICE (SAFE TRY) */
+/* ------------------- */
+async function speak(text){
+    try{
+        const response = await fetch("https://api.openai.com/v1/audio/speech", {
+            method:"POST",
+            headers:{
+                "Authorization":"Bearer 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",
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                model:"gpt-4o-mini-tts",
+                voice:"nova",
+                input:text
+            })
+        });
+
+        if(!response.ok) throw new Error("API failed");
+
+        const blob=await response.blob();
+        const url=URL.createObjectURL(blob);
+
+        let audio=new Audio(url);
+        audio.play();
+
+    }catch(e){
+        console.log("Fallback voice used");
+        fallbackSpeak(text);
+    }
+}
+
+/* ------------------- */
+/* ENTER */
+/* ------------------- */
 function enter(){
-    speak("Assalamu Alaikum wa Rahmatullahi wa Barakatuh");
-    
+    speak("Assalamu Alaikum wa Rahmatullahi wa Barakatuh. Welcome.");
     setTimeout(()=>{
         welcome.style.display="none";
         calc.style.display="block";
-    },1500);
+    },2000);
 }
 
 /* BACK */

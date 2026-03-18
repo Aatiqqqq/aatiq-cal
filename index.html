@@ -15,14 +15,12 @@ body{
     background:url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee") no-repeat center/cover;
     color:white;
 }
-
 .overlay{
     position:absolute;
     width:100%;
     height:100%;
     background:rgba(0,0,0,0.6);
 }
-
 .center{
     position:relative;
     height:100%;
@@ -30,11 +28,7 @@ body{
     justify-content:center;
     align-items:center;
 }
-
-.welcome{
-    text-align:center;
-}
-
+.welcome{text-align:center;}
 .welcome button{
     margin-top:20px;
     padding:14px 30px;
@@ -43,7 +37,6 @@ body{
     background:#00c6ff;
     color:black;
 }
-
 .calculator{
     display:none;
     background:rgba(255,255,255,0.08);
@@ -53,7 +46,6 @@ body{
     width:90%;
     max-width:320px;
 }
-
 .display{
     background:black;
     padding:15px;
@@ -62,13 +54,11 @@ body{
     text-align:right;
     margin-bottom:10px;
 }
-
 .buttons{
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:8px;
 }
-
 button{
     height:55px;
     border:none;
@@ -77,17 +67,8 @@ button{
     color:white;
     font-size:18px;
 }
-
-.equal{
-    background:#00c6ff;
-    color:black;
-}
-
-.back{
-    margin-bottom:10px;
-    cursor:pointer;
-}
-
+.equal{background:#00c6ff;color:black;}
+.back{margin-bottom:10px;cursor:pointer;}
 .voice{
     position:fixed;
     bottom:70px;
@@ -101,7 +82,6 @@ button{
     align-items:center;
     cursor:pointer;
 }
-
 .footer{
     position:fixed;
     bottom:8px;
@@ -124,8 +104,7 @@ button{
 </div>
 
 <div class="calculator" id="calc">
-    <div class="back" onclick="back()">← Back</div>
-
+    <div class="back" onclick="goBack()">← Back</div>
     <div class="display" id="display">0</div>
 
     <div class="buttons">
@@ -157,33 +136,32 @@ button{
 
 </div>
 
-<div class="voice" onclick="voice()">🎤</div>
+<div class="voice" onclick="startVoice()">🎤</div>
 <div class="footer">© 2026 Aatiq</div>
 
 <script>
-let display=document.getElementById("display");
+let display = document.getElementById("display");
+let welcome = document.getElementById("welcome");
+let calc = document.getElementById("calc");
 
-/* ------------------- */
-/* NORMAL VOICE (FALLBACK) */
-/* ------------------- */
+/* 🔑 ADD YOUR API KEY HERE */
+const API_KEY = "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";
+
+/* fallback voice */
 function fallbackSpeak(text){
-    let msg=new SpeechSynthesisUtterance(text);
-    msg.lang="en-GB";
-    msg.rate=1;
-    msg.pitch=1;
+    let msg = new SpeechSynthesisUtterance(text);
+    msg.lang = "en-GB";
     speechSynthesis.cancel();
     speechSynthesis.speak(msg);
 }
 
-/* ------------------- */
-/* AI VOICE (SAFE TRY) */
-/* ------------------- */
-async function speak(text){
+/* AI voice ONLY for greeting */
+async function aiSpeak(text){
     try{
-        const response = await fetch("https://api.openai.com/v1/audio/speech", {
+        const res = await fetch("https://api.openai.com/v1/audio/speech", {
             method:"POST",
             headers:{
-                "Authorization":"Bearer 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",
+                "Authorization":"Bearer " + API_KEY,
                 "Content-Type":"application/json"
             },
             body:JSON.stringify({
@@ -193,33 +171,28 @@ async function speak(text){
             })
         });
 
-        if(!response.ok) throw new Error("API failed");
+        if(!res.ok) throw new Error();
 
-        const blob=await response.blob();
-        const url=URL.createObjectURL(blob);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        new Audio(url).play();
 
-        let audio=new Audio(url);
-        audio.play();
-
-    }catch(e){
-        console.log("Fallback voice used");
+    }catch{
         fallbackSpeak(text);
     }
 }
 
-/* ------------------- */
 /* ENTER */
-/* ------------------- */
 function enter(){
-    speak("Assalamu Alaikum wa Rahmatullahi wa Barakatuh. Welcome.");
+    aiSpeak("Assalamu Alaikum wa Rahmatullahi wa Barakatuh. Welcome.");
     setTimeout(()=>{
         welcome.style.display="none";
         calc.style.display="block";
     },2000);
 }
 
-/* BACK */
-function back(){
+/* NAV */
+function goBack(){
     calc.style.display="none";
     welcome.style.display="block";
 }
@@ -229,26 +202,32 @@ function append(v){
     if(display.innerText==="0") display.innerText=v;
     else display.innerText+=v;
 }
-
 function clearDisplay(){ display.innerText="0"; }
-
-function backspace(){
-    display.innerText=display.innerText.slice(0,-1)||"0";
-}
+function backspace(){ display.innerText=display.innerText.slice(0,-1)||"0"; }
 
 function calculate(){
     try{
-        let result=eval(display.innerText);
-        display.innerText=result;
-        speak("The answer is " + result);
+        let result = eval(display.innerText);
+        display.innerText = result;
+
+        // fallback voice (NO API → no 429)
+        fallbackSpeak("The answer is " + result);
+
     }catch{
-        display.innerText="Error";
-        speak("Error");
+        display.innerText = "Error";
+        fallbackSpeak("Error");
     }
 }
 
+/* KEYBOARD */
+document.addEventListener("keydown",(e)=>{
+    if(!isNaN(e.key)||"+-*/.%".includes(e.key)) append(e.key);
+    if(e.key==="Enter") calculate();
+    if(e.key==="Backspace") backspace();
+});
+
 /* VOICE INPUT */
-function voice(){
+function startVoice(){
     let rec=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
     rec.lang="en-GB";
 

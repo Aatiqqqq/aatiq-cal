@@ -3,124 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aatiq AI Calculator</title>
+<title>Aatiq Smart Calculator</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-body {
+body{
     margin:0;
+    font-family:Poppins,sans-serif;
     height:100vh;
-    font-family:"Poppins", sans-serif;
     background:url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee") no-repeat center/cover;
     color:white;
 }
 
-/* overlay */
-.overlay {
+.overlay{
     position:absolute;
     width:100%;
     height:100%;
     background:rgba(0,0,0,0.6);
 }
 
-/* center */
-.center {
+.center{
     position:relative;
     height:100%;
     display:flex;
     justify-content:center;
     align-items:center;
-    padding:10px;
 }
 
 /* welcome */
-.welcome {
+.welcome{
     text-align:center;
 }
 
-.welcome button {
+.welcome button{
     margin-top:20px;
     padding:14px 30px;
     border:none;
     border-radius:30px;
-    background:linear-gradient(45deg,#00c6ff,#0072ff);
-    color:white;
+    background:#00c6ff;
+    color:black;
     font-size:16px;
-    cursor:pointer;
 }
 
 /* calculator */
-.calculator {
+.calculator{
     display:none;
-    backdrop-filter:blur(20px);
     background:rgba(255,255,255,0.08);
-    border-radius:20px;
+    backdrop-filter:blur(20px);
     padding:15px;
-    width:100%;
-    max-width:340px;
-}
-
-/* back */
-.back-btn {
-    margin-bottom:10px;
-    cursor:pointer;
-    font-size:14px;
+    border-radius:20px;
+    width:90%;
+    max-width:320px;
 }
 
 /* display */
-.display {
-    height:65px;
+.display{
+    background:black;
+    padding:15px;
+    border-radius:10px;
     font-size:24px;
-    padding:10px;
     text-align:right;
-    border-radius:12px;
-    background:rgba(0,0,0,0.7);
-    margin-bottom:12px;
+    margin-bottom:10px;
 }
 
-/* buttons */
-.buttons {
+/* grid */
+.buttons{
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:8px;
 }
 
-button {
+button{
     height:55px;
     border:none;
-    border-radius:12px;
-    font-size:18px;
-    background:rgba(255,255,255,0.15);
+    border-radius:10px;
+    background:rgba(255,255,255,0.2);
     color:white;
-    cursor:pointer;
+    font-size:18px;
 }
 
-.equal {
+.equal{
     background:#00c6ff;
     color:black;
 }
 
+/* back */
+.back{
+    margin-bottom:10px;
+    cursor:pointer;
+}
+
 /* voice orb */
-.voice-orb {
+.voice{
     position:fixed;
     bottom:70px;
     right:15px;
     width:60px;
     height:60px;
-    background:radial-gradient(circle,#00c6ff,#0072ff);
     border-radius:50%;
+    background:#00c6ff;
     display:flex;
     justify-content:center;
     align-items:center;
     cursor:pointer;
 }
 
-/* footer */
-.footer {
+.footer{
     position:fixed;
     bottom:8px;
-    right:12px;
+    right:10px;
     font-size:11px;
 }
 </style>
@@ -132,147 +124,133 @@ button {
 
 <div class="center">
 
-    <!-- WELCOME -->
-    <div class="welcome" id="welcome">
-        <h2>السلام عليكم ورحمة الله وبركاته</h2>
-        <p>Welcome to Aatiq's Calculator</p>
+<div class="welcome" id="welcome">
+    <h2>السلام عليكم ورحمة الله وبركاته</h2>
+    <p>Welcome to Aatiq's Calculator</p>
+    <button onclick="enter()">Enter</button>
+</div>
 
-        <!-- ENTER BUTTON BACK -->
-        <button onclick="enterApp()">Enter</button>
+<div class="calculator" id="calc">
+    <div class="back" onclick="back()">← Back</div>
 
-        <p style="margin-top:10px;font-size:13px;">
-            aatiqhamid9@gmail.com
-        </p>
+    <div class="display" id="display">0</div>
+
+    <div class="buttons">
+        <button onclick="clearDisplay()">C</button>
+        <button onclick="backspace()">⌫</button>
+        <button onclick="append('%')">%</button>
+        <button onclick="append('/')">÷</button>
+
+        <button onclick="append('7')">7</button>
+        <button onclick="append('8')">8</button>
+        <button onclick="append('9')">9</button>
+        <button onclick="append('*')">×</button>
+
+        <button onclick="append('4')">4</button>
+        <button onclick="append('5')">5</button>
+        <button onclick="append('6')">6</button>
+        <button onclick="append('-')">−</button>
+
+        <button onclick="append('1')">1</button>
+        <button onclick="append('2')">2</button>
+        <button onclick="append('3')">3</button>
+        <button onclick="calculate()" class="equal">=</button>
+
+        <button onclick="append('+')">+</button>
+        <button onclick="append('0')">0</button>
+        <button onclick="append('.')">.</button>
     </div>
-
-    <!-- CALCULATOR -->
-    <div class="calculator" id="calc">
-        <div class="back-btn" onclick="goBack()">← Back</div>
-
-        <div class="display" id="display">0</div>
-
-        <div class="buttons">
-            <button onclick="clearDisplay()">C</button>
-            <button onclick="backspace()">⌫</button>
-            <button onclick="append('%')">%</button>
-            <button onclick="append('/')">÷</button>
-
-            <button onclick="append('7')">7</button>
-            <button onclick="append('8')">8</button>
-            <button onclick="append('9')">9</button>
-            <button onclick="append('*')">×</button>
-
-            <button onclick="append('4')">4</button>
-            <button onclick="append('5')">5</button>
-            <button onclick="append('6')">6</button>
-            <button onclick="append('-')">−</button>
-
-            <button onclick="append('1')">1</button>
-            <button onclick="append('2')">2</button>
-            <button onclick="append('3')">3</button>
-            <button class="equal" onclick="calculate()">=</button>
-
-            <button onclick="append('0')">0</button>
-            <button onclick="append('.')">.</button>
-        </div>
-    </div>
+</div>
 
 </div>
 
-<div class="voice-orb" onclick="startVoice()">🎤</div>
+<div class="voice" onclick="voice()">🎤</div>
 <div class="footer">© 2026 Aatiq</div>
 
 <script>
-let display = document.getElementById("display");
-let welcome = document.getElementById("welcome");
-let calc = document.getElementById("calc");
+let display=document.getElementById("display");
 
-/* ENTER APP */
-function enterApp(){
-    greet();
+/* VOICE LOAD */
+let voices=[];
+speechSynthesis.onvoiceschanged=()=>{
+    voices=speechSynthesis.getVoices();
+};
+
+/* NORMAL VOICE */
+function getVoice(){
+    return voices.find(v=>v.lang==="en-GB") || voices[0];
+}
+
+/* SPEAK CLEAN */
+function speak(text){
+    let msg=new SpeechSynthesisUtterance(text);
+
+    msg.voice=getVoice();
+    msg.rate=1;   // normal
+    msg.pitch=1;  // normal
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(msg);
+}
+
+/* ENTER (FIXED SALAM) */
+function enter(){
+    speak("Assalamu Alaikum wa Rahmatullahi wa Barakatuh");
+    
     setTimeout(()=>{
         welcome.style.display="none";
         calc.style.display="block";
-    },1200);
+    },1500);
 }
 
 /* BACK */
-function goBack(){
+function back(){
     calc.style.display="none";
     welcome.style.display="block";
 }
 
-/* GREETING */
-function greet(){
-    speak("Assalamu Alaikum wa Rahmatullahi wa Barakatuh");
-}
-
-/* CALCULATOR */
+/* CALC */
 function append(v){
     if(display.innerText==="0") display.innerText=v;
     else display.innerText+=v;
 }
 
-function clearDisplay(){
-    display.innerText="0";
-}
+function clearDisplay(){ display.innerText="0"; }
 
 function backspace(){
-    display.innerText = display.innerText.slice(0,-1) || "0";
+    display.innerText=display.innerText.slice(0,-1)||"0";
 }
 
 function calculate(){
     try{
-        let result = eval(display.innerText);
-        display.innerText = result;
-        speak(result);
+        let result=eval(display.innerText);
+        display.innerText=result;
+        speak("The answer is " + result);
     }catch{
-        display.innerText = "Error";
+        display.innerText="Error";
+        speak("Error");
     }
 }
 
-/* KEYBOARD */
-document.addEventListener("keydown",(e)=>{
-    if(!isNaN(e.key)||"+-*/.%".includes(e.key)) append(e.key);
-    if(e.key==="Enter") calculate();
-    if(e.key==="Backspace") backspace();
-});
-
-/* VOICE INPUT FIXED */
-function startVoice(){
-    let rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+/* VOICE INPUT */
+function voice(){
+    let rec=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
     rec.lang="en-GB";
 
-    rec.onresult = function(e){
-        let speech = e.results[0][0].transcript.toLowerCase();
+    rec.onresult=(e)=>{
+        let t=e.results[0][0].transcript.toLowerCase();
 
-        speech = speech
-            .replace(/plus/g,"+")
-            .replace(/minus/g,"-")
-            .replace(/multiply|into/g,"*")
-            .replace(/divide/g,"/")
-            .replace(/[^0-9+\-*/%.]/g,""); // CLEAN INPUT
+        t=t.replace(/plus/g,"+")
+           .replace(/minus/g,"-")
+           .replace(/multiply|into/g,"*")
+           .replace(/divide/g,"/")
+           .replace(/[^0-9+\-*/%.]/g,"");
 
-        if(speech===""){
-            display.innerText="Error";
-            return;
-        }
-
-        display.innerText = speech;
+        display.innerText=t;
         calculate();
     };
 
     rec.start();
-}
-
-/* SPEAK */
-function speak(text){
-    let msg = new SpeechSynthesisUtterance(text);
-    msg.lang="en-GB";
-    msg.rate=0.9;
-    msg.pitch=1.3;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(msg);
 }
 </script>
 
